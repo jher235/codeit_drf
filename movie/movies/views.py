@@ -3,6 +3,7 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.generics import get_object_or_404
 
 from .models import  Movie, Actor
 from .serializers import MovieSerializer, ActorSerializer
@@ -33,13 +34,47 @@ def actor_list(request):
         serializer = ActorSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATE)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'POST', 'DELETE'])
+
+@api_view(['GET','PATCH','DELETE'])
+def actor_detail(request, pk):
+    actor = get_object_or_404(Actor, pk=pk)
+    if request.method == 'GET':
+        serializer = ActorSerializer(actor)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'PATCH':
+        serializer = ActorSerializer(actor, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'DELETE':
+        actor.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+
+@api_view(['GET', 'PATCH', 'DELETE'])
 def movie_detail(request, pk):
-    pass
+    movie = get_object_or_404(Movie, pk=pk)
+    if request.method == 'GET':
+        serializer = MovieSerializer(movie)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'PATCH':
+        serializer = MovieSerializer(movie, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        movie.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
 
 # Create your views here.
