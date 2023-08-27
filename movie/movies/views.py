@@ -91,5 +91,8 @@ def review_list(request, pk):
 
 
 
+# @api_view(['GET'])
+# def
+
 
 # Create your views here.

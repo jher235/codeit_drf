@@ -24,7 +24,8 @@ from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
 
 
 
-
+# class MVSerializer(serializers.ModelSerializer):
+#
 
 
 
@@ -60,10 +61,13 @@ class MovieSerializer(serializers.ModelSerializer):
     # movie_reviews = serializers.PrimaryKeyRelatedField(source='reviews', many=True, read_only=True)
     # reviews = serializers.StringRelatedField(many=True)
     # reviews = ReviewSerializer(many=True, read_only=True)
+
+    actors = serializers.StringRelatedField(many=True, read_only=True)
+    # MV_actor = serializers.StringRelatedField(many=True)
     class Meta:
         model = Movie
-        fields = ['id', 'name', 'reviews', 'opening_date', 'running_time', 'overview']
-        read_only_fields = ['reviews']
+        fields = ['id', 'name', 'reviews', 'actors', 'opening_date', 'running_time', 'overview']
+        read_only_fields = ['reviews', 'actors']
         validators = [
             UniqueTogetherValidator(
                 queryset=Movie.objects.all(),
@@ -102,9 +106,10 @@ class ReviewSerializer(serializers.ModelSerializer):
 #         return instance
 
 class ActorSerializer(serializers.ModelSerializer):
+    movies = MovieSerializer(read_only=True, many=True)
     class Meta:
         model = Actor
-        fields = ['id', 'name', 'gender', 'birth_date']
+        fields = ['id', 'name', 'gender', 'birth_date', 'movies']
 
 
 
