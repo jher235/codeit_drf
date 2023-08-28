@@ -5,10 +5,17 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
 
 from .models import  Movie, Actor, Review
 from .serializers import MovieSerializer, ActorSerializer, ReviewSerializer
 
+
+class MoviePageNumberPagination(PageNumberPagination):
+    page_size = 5
+
+class ActorPageNumberPagination(PageNumberPagination):
+    page_size = 7
 
 # @api_view(['GET', 'POST'])
 # def movie_list(request):
@@ -39,6 +46,7 @@ from .serializers import MovieSerializer, ActorSerializer, ReviewSerializer
 class MovieList(ListCreateAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
+    pagination_class = MoviePageNumberPagination
 
 
 
@@ -57,18 +65,23 @@ class MovieList(ListCreateAPIView):
 #     return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 
-class ActorList(APIView):
-    def get(self, request):
-        actors = Actor.objects.all()
-        serializer = ActorSerializer(actors, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+# class ActorList(APIView):
+#     def get(self, request):
+#         actors = Actor.objects.all()
+#         serializer = ActorSerializer(actors, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+#
+#     def post(self, request):
+#         serializer = ActorSerializer(data=request.data)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request):
-        serializer = ActorSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class ActorList(ListCreateAPIView):
+    queryset = Actor.objects.all()
+    serializer_class = ActorSerializer
+    pagination_class = ActorPageNumberPagination
 
 
 
@@ -86,28 +99,32 @@ class ActorList(APIView):
 #     elif request.method == 'DELETE':
 #         actor.delete()
 #         return Response(status=status.HTTP_204_NO_CONTENT)
-class ActorDetail(APIView):
-    def get_object(self, request, pk):
-        actor = get_object_or_404(Actor, pk=pk)
-        return actor
+# class ActorDetail(APIView):
+#     def get_object(self, request, pk):
+#         actor = get_object_or_404(Actor, pk=pk)
+#         return actor
+#
+#     def get(self, request, pk):
+#         actor = self.get_object(pk)
+#         serializer = ActorSerializer(actor, many=True)
+#         return Response(serializer.data)
+#
+#     def patch(self, request, pk):
+#         actor = self.get_object(pk)
+#         serializer = ActorSerializer(actor, data=request.data, partial=True)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+#     def delete(self, request, pk):
+#         actor = self.get_object(pk)
+#         actor.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def get(self, request, pk):
-        actor = self.get_object(pk)
-        serializer = ActorSerializer(actor, many=True)
-        return Response(serializer.data)
-
-    def patch(self, request, pk):
-        actor = self.get_object(pk)
-        serializer = ActorSerializer(actor, data=request.data, partial=True)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        actor = self.get_object(pk)
-        actor.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+class ActorDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Actor.objects.all()
+    serializer_class = ActorSerializer
 
 
 
