@@ -43,10 +43,10 @@ class MovieSerializer(serializers.ModelSerializer):
     #     if 10 <= len(value) and len(value)<=300:
     #         return value
     #     raise ValidationError('영화 소개는 10자 이상, 300자 이하로 작성해주세요.')
-    def validators(self, attrs):
+    def validate(self, attrs):
         if 10>len(attrs['overview']) or len(attrs['overview'])>300:
             raise ValidationError('영화 소개는 10자 이상, 300자 이하로 작성해주세요.')
-        if len(attrs['name'] > 50):
+        if len(attrs['name']) > 50:
             raise ValidationError('영화 이름은 50자 이하로 작성해주세요.')
         return attrs
 
